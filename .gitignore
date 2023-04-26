@@ -1,5 +1,8 @@
 # Data Folder with training data
-/data
+/data/*
+!/data/.gitkeep
+/evaluate/*
+!/evaluate/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
