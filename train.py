@@ -109,7 +109,7 @@ for index in range(len(sortedList)-1):
                 probabilitydict[cname][word] = (wordict[word] + 1) / (numdict[cname] + 2)
 
 print("Amount of words in vocabulary", wordCountWithHighChi)
-checkpoint = open("./data.txt", "w")
+checkpoint = open("./data.model", "w")
 for cname, probabilitydicts in probabilitydict.items():
     checkpoint.write(cname+","+str(numdict[cname]/len(files))+";")
 
