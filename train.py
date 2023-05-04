@@ -1,10 +1,8 @@
 import argparse
-from os import path, getcwd
+from os import path
 import glob
 import sys
-import re
-import numpy
-from evaluationClass import evaluationClass
+from pythonClassEvaluator import EvaluationClass, cutils
 
 # Argument Parser > Allows for command input
 
@@ -30,98 +28,62 @@ else:
     sys.exit("Folder not found")
 files = glob.glob(args.folder + "/**/*.txt", recursive=True)
 
+# Create the classes with an input name and a regular expression
 for i in range(args.c):
     print("Enter Class Name")
     className = input()
     print("Enter regex for search name")
     classRegex = input()
-    classlist.append(evaluationClass(className, classRegex))
-
-def getTrimmedNamesFromFilesWithRegex(files, regex):
-    filesInClass = []
-    for pathToFile in files:
-        nameWithoutSpaces = str.replace(pathToFile, " ", "")
-        name = re.findall("([0-9a-zA-Z\-\(\)]+\.txt)$", nameWithoutSpaces)
-        if (len(name) > 0):
-            found = re.search(regex, name[0])
-            if found:
-                filesInClass.append(pathToFile)
-    return filesInClass
-
-def addWordToEvaluationClass(evalClass, currentList, word):
-    if word not in currentList:
-        evaluationClass.addWord(evalClass, word)
-        if word in totaldict:
-            totaldict[w] = totaldict[w] + 1
-        else:
-            totaldict[w] = 0
-        list.append(currentList, word)
-
-def getWordsForDocument(filePath):
-    doc = open(filePath, "r")
-    docstr = doc.read().lower()
-    return re.findall("[a-z]+", docstr)
+    classlist.append(EvaluationClass(className, classRegex))
 
 
+# Loop over all the documents and add the words to the dictionaries using custom made cutils (important functions)
 for ec in classlist:
-    print("Creating list for class" + ec.name + "...")
-    fileNames = getTrimmedNamesFromFilesWithRegex(files, ec.regex)        
+    print("Creating list for class " + ec.name + "...")
+    fileNames = cutils.getTrimmedNamesFromFilesWithRegex(files, ec.regex)        
     ec.setDocumentCount(len(fileNames))
-    totalNum += ec.totalWordNum()
+    totalNum += EvaluationClass.getTotalWordNum(ec)
     
     print("Found ", ec.documentCount, " Files")
     print("Adding words to dictionary...")
     for filePath in fileNames:
-        words = getWordsForDocument(filePath)
+        words = cutils.getWordsForDocument(filePath)
         currentlist = []
-        for w in words:
-            addWordToEvaluationClass(ec, currentlist, w)
+        for word in words:
+            if word not in currentlist:
+                EvaluationClass.addWord(ec, word)
+                currentlist.append(word)
+                if word in totaldict:
+                    totaldict[word] += 1
+                else:
+                    totaldict[word] = 1
 
-    print("Words added for "+ec.name+": ",ec.totalWordNum())
+    print("Amount of words added for "+ec.name+": ",EvaluationClass.getTotalWordNum(ec))
                 
 print("Total Number of Files:", totalNum)
 print("Total Number of Words: ",len(totaldict))
 
-def calculateChiForWord(word):
-    chi = 0.0
-    n = len(files)
-    for ec in classlist:
-        for i in range(2):
-            c = ec.documentCount
-            w = (n * i - count) * numpy.sign(-0.5+i)
-            e = (w*c)/n
-            wordCount = 0
-            if word in ec.wordDict:
-                wordCount = ec.wordDict[word]
-            m = (ec.documentCount * i - wordCount) * numpy.sign(-0.5+i)
-            if (e != 0):
-                chi += pow(m-e,2)/e
-    return chi
-
+# Loop over all the words and calculate the X2 values
 for word, count in totaldict.items():
-    chi = calculateChiForWord(word)
+    chi = cutils.calculateChiForWord(word, classlist)
     chiList[word] = round(chi, 2)
 
+# Sort the list from low to high
 sortedList = sorted(chiList.items(), key=lambda item: item[1])
 wordCountWithHighChi = 0
 
-for index in range(len(sortedList)-1):
-    if (index > len(sortedList)-2 - args.v):
+# Go over all the highest X2 words and calculate their probabilities
+for index in range(len(sortedList)-args.v-1, len(sortedList)-1):
+    if (index >= 0):
         wordCountWithHighChi+=1
         word = sortedList[index][0]
         for ec in classlist:
             if word in ec.wordDict:
-                ec.addProbability(word, (ec.wordDict[word] + 1) / (ec.totalWordNum() + 2)) 
+                probability = (ec.wordDict[word] + 1) / (EvaluationClass.getTotalWordNum(ec) + 2)
+                EvaluationClass.addProbability(ec, word, probability) 
 
 print("Amount of words in vocabulary", wordCountWithHighChi)
-model = open("./data/data.model", "w")
-for ec in classlist:
-    model.write(ec.name+","+str(ec.documentCount/len(files))+";")
-model.write("|")
-for ec in classlist:
-    for word, probability in ec.probabilityDict.items():
-        model.write(ec.name+","+word+","+str(probability)+";")
-model.close()
+cutils.encodeData(classlist)
 print("Done training model. Output path is ./data/data.model")
         
 

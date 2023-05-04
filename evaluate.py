@@ -3,6 +3,7 @@ import glob
 import re
 import math
 import sys
+from pythonClassEvaluator import cutils
 
 parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
 
@@ -15,6 +16,7 @@ args = parser.parse_args()
 files = glob.glob(args.folder + "/**/*.txt", recursive=True)
 checkpointFile = open(args.checkpoint, "r")
 checkpoint = checkpointFile.read()
+checkpointFile.close()
 
 classdict = {}
 prodict = {}
