@@ -50,6 +50,16 @@ for documentpath in files:
     print("Predicted Class for ",documentpath, predictedClass, highestChance)
     guessDictionary[documentpath] = predictedClass
 
+
+# A small file is generated with results
+returnText = "<p>"
+for path, c in guessDictionary:
+    returnText += (path,c,"<br>")
+returnText += "</p>"
+returnFile = open("./data/output.txt", "w")
+returnFile.write(returnText)
+returnFile.close()
+
 if not args.checkhamspam:
     sys.exit("Done :)")
 
@@ -87,5 +97,6 @@ print("Correct Guesses Total:")
 print(correctGuessHam+correctGuessSpam)
 print("Correct %:")
 print(correctPercentage)
+
     
 
