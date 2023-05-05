@@ -3,7 +3,7 @@ import glob
 import re
 import math
 import sys
-from pythonClassEvaluator import cutils, EvaluationClass
+from lib.pythonClassEvaluator import cutils, EvaluationClass
 
 parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
 

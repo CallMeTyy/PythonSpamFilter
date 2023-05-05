@@ -2,7 +2,7 @@ import argparse
 from os import path
 import glob
 import sys
-from pythonClassEvaluator import EvaluationClass, cutils
+from lib.pythonClassEvaluator import EvaluationClass, cutils
 
 # Argument Parser > Allows for command input
 
