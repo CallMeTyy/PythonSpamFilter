@@ -42,8 +42,7 @@ for ec in classlist:
     print("Creating list for class " + ec.name + "...")
     fileNames = cutils.getTrimmedNamesFromFilesWithRegex(files, ec.regex)        
     ec.setDocumentCount(len(fileNames))
-    totalNum += EvaluationClass.getTotalWordNum(ec)
-    
+    totalNum += EvaluationClass.GetDocumentCount(ec)
     print("Found ", ec.documentCount, " Files")
     print("Adding words to dictionary...")
     for filePath in fileNames:
@@ -51,40 +50,40 @@ for ec in classlist:
         currentlist = []
         for word in words:
             if word not in currentlist:
-                EvaluationClass.addWord(ec, word)
+                ec.addWord(word)
                 currentlist.append(word)
                 if word in totaldict:
                     totaldict[word] += 1
                 else:
-                    totaldict[word] = 1
-
+                    totaldict[word] = 1 
     print("Amount of words added for "+ec.name+": ",EvaluationClass.getTotalWordNum(ec))
-                
+           
 print("Total Number of Files:", totalNum)
 print("Total Number of Words: ",len(totaldict))
 
 # Loop over all the words and calculate the X2 values
 for word, count in totaldict.items():
-    chi = cutils.calculateChiForWord(word, classlist)
+    chi = cutils.calculateChiForWord(word, classlist,totaldict[word])
     chiList[word] = round(chi, 2)
 
 # Sort the list from low to high
 sortedList = sorted(chiList.items(), key=lambda item: item[1])
 wordCountWithHighChi = 0
-
+#min(args.v, len(sortedList))
 # Go over all the highest X2 words and calculate their probabilities
-for index in range(len(sortedList)-args.v-1, len(sortedList)-1):
+for index in range(max(0,len(sortedList)-args.v), len(sortedList)):
     if (index >= 0):
         wordCountWithHighChi+=1
         word = sortedList[index][0]
         for ec in classlist:
             if word in ec.wordDict:
-                probability = (ec.wordDict[word] + 1) / (EvaluationClass.getTotalWordNum(ec) + 2)
-                EvaluationClass.addProbability(ec, word, probability) 
+                probability = (EvaluationClass.getOccuranceForWord(ec, word)+1) / (EvaluationClass.GetDocumentCount(ec) + 2)
+                EvaluationClass.addProbability(ec, word, probability)
+                print(ec.name, word, probability) 
 
 print("Amount of words in vocabulary", wordCountWithHighChi)
 cutils.encodeData(classlist)
-print("Done training model. Output path is ./data/data.model")
+print("Done training model. Output path is ./evaluate/data.model")
         
 
 

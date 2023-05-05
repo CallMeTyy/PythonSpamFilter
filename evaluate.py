@@ -3,7 +3,7 @@ import glob
 import re
 import math
 import sys
-from pythonClassEvaluator import cutils
+from pythonClassEvaluator import cutils, EvaluationClass
 
 parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
 
@@ -13,54 +13,46 @@ parser.add_argument('--checkhamspam', type=bool, help='Whether to check for ham 
 
 args = parser.parse_args()
 
+# Global Variables
+guessDictionary = {} # Stores a predicted class for a path to a file. 
+# ================
+
+
+# Retrieve all files and open the checkpoint file
 files = glob.glob(args.folder + "/**/*.txt", recursive=True)
 checkpointFile = open(args.checkpoint, "r")
-checkpoint = checkpointFile.read()
+rawData = checkpointFile.read()
 checkpointFile.close()
 
-classdict = {}
-prodict = {}
-data = re.split("\|", checkpoint)
-classprodata = re.split(";", data[0])
-for cpd in classprodata:
-    values = re.split(",", cpd)
-    if (len(values) == 2):
-        probability = values[1]
-        prodict[values[0]] = values[1]
-        classdict[values[0]] = dict()
+# Decode the data from the checkpoint file
+classList = cutils.decodeData(rawData)
 
-probabilitydata = re.split(";", data[1])
-for d in probabilitydata:
-    value = re.split(",",d)
-    if (len(value) == 3):
-        classname = value[0]
-        word = value[1]
-        probability = value[2]
-        classdict[classname][word] = probability
-        
-guessDictionary = {}
+# Loop over all the files and check which class is most likely
 for documentpath in files:
-    doc = open(documentpath, "r")
-    text = doc.read().lower()
-    words = re.findall("[a-z]+", text)
-    probabilities = {}
-    for cname, p in prodict.items():
-        probabilities[cname] = math.log10(float(p))
-        wordict = classdict[cname]
-        for w in words:
-            if w in wordict:
-                probabilities[cname] = probabilities[cname] + math.log10(float(wordict[w]))
+    words = cutils.getWordsForDocument(documentpath)
     highestChance = -1000000
     predictedClass = ""
-    for cname, probability in probabilities.items():
-        if float(probability) > highestChance:
-            highestChance = float(probability)
-            predictedClass = cname
-    print(documentpath, predictedClass, highestChance)
+    probabilities = []
+
+    for index in range(len(classList)):
+        probabilities.append(math.log10(EvaluationClass.getClassProbability(classList[index])))
+        for word in words:
+            probabilities[index] += EvaluationClass.getLogProbabilityForWord(classList[index], word)
+
+    # The highest chance has the largest likelyhood
+    for probability in probabilities:
+        print(probability)
+        if probability > highestChance:
+            highestChance = probability
+            className = classList[probabilities.index(probability)]
+            predictedClass = EvaluationClass.getName(className)
+
+    print("Predicted Class for ",documentpath, predictedClass, highestChance)
     guessDictionary[documentpath] = predictedClass
 
 if not args.checkhamspam:
     sys.exit("Done :)")
+
 
 # ======= Correct check ==========
 
@@ -68,6 +60,8 @@ correctGuessHam = 0
 correctGuessSpam = 0
 falseGuessHam = 0
 falseGuessSpam = 0
+
+# Loop over all guesses and check whether the guess was correct
 for path, guess in guessDictionary.items():
     name = re.findall("([0-9a-zA-Z\-\(\)]+\.txt)$", str.replace(path, " ", ""))
     actualclass = "ham"
