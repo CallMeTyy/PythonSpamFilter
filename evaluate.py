@@ -61,7 +61,7 @@ returnFile.write(returnText)
 returnFile.close()
 
 if not args.checkhamspam:
-    sys.exit("Done :)")
+    sys.exit(0)
 
 
 # ======= Correct check ==========
