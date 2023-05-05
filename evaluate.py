@@ -54,7 +54,7 @@ for documentpath in files:
 # A small file is generated with results
 returnText = "<p>"
 for path, c in guessDictionary.items():
-    returnText += (path,c,"<br>")
+    returnText += path+" - "+c+"<br>"
 returnText += "</p>"
 returnFile = open("./data/output.txt", "w")
 returnFile.write(returnText)
