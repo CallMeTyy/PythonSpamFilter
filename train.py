@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser(description='Naive Bayes Email Classifier Train
 parser.add_argument('--folder', type=str, help='Input Folder', required=True)
 parser.add_argument('--c', type=int, help='The Amount of Classes', default=2, required=False)
 parser.add_argument('--v', type=int, help='Words in vocabulary', default=200, required=False)
-parser.add_argument('--cs', type=int, help='All class names in csv', default="", required=False)
-parser.add_argument('--rs', type=int, help='All class regex in csv', default="", required=False)
+parser.add_argument('--cs', type=str, help='All class names in csv', default="", required=False)
+parser.add_argument('--rs', type=str, help='All class regex in csv', default="", required=False)
 
 args = parser.parse_args()
 
