@@ -3,6 +3,7 @@ import glob
 import re
 import math
 import sys
+import time
 from lib.pythonClassEvaluator import cutils, EvaluationClass
 
 parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
@@ -62,6 +63,26 @@ returnFile.close()
 
 if not args.checkhamspam:
     sys.exit(0)
+
+def GetClassName():
+    for index in range(20):
+        if guessDictionary:
+            returnText = "<p>"
+            for path, c in guessDictionary.items():
+                returnText += path+" - "+c+"<br>"
+            returnText += "</p>"
+            return returnText
+        else:
+            time.sleep(0.25)
+    return '''<!doctype html>
+    <title>Upload new File</title>
+    <h1>File upload timed out/h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+            
 
 
 # ======= Correct check ==========
