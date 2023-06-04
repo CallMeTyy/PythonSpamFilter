@@ -112,9 +112,9 @@ class cutils:
         return chi
     
     def encodeData(classlist):
-        """Encodes the data of a given classlist to a document file (output at ./evaluate/data.model). {classlist}"""
+        """Encodes the data of a given classlist to a document file (output at ./data.model). {classlist}"""
         totalFileCount = cutils.calculateTotalFileCount(classlist)
-        model = open("./evaluate/data.model", "w")
+        model = open("./data.model", "w")
         for ec in classlist:
             model.write(ec.name+","+str(ec.documentCount/totalFileCount)+";")
         model.write("|")
