@@ -2,8 +2,6 @@ import argparse
 import glob
 import re
 import math
-import sys
-import time
 from lib.pythonClassEvaluator import cutils, EvaluationClass
 
 parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
@@ -53,37 +51,14 @@ for documentpath in files:
 
 
 # A small file is generated with results
-returnText = "<p>"
-for path, c in guessDictionary.items():
-    returnText += path+" - "+c+"<br>"
-returnText += "</p>"
-returnFile = open("./output.txt", "w")
-returnFile.write(returnText)
-returnFile.close()
-
-if not args.checkhamspam:
-    sys.exit(0)
-
-def GetClassName():
-    for index in range(20):
-        if guessDictionary:
-            returnText = "<p>"
-            for path, c in guessDictionary.items():
-                returnText += path+" - "+c+"<br>"
-            returnText += "</p>"
-            return returnText
-        else:
-            time.sleep(0.25)
-    return '''<!doctype html>
-    <title>Upload new File</title>
-    <h1>File upload timed out/h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
-            
-
+#returnText = "<p>"
+#for path, c in guessDictionary.items():
+#    returnText += path+" - "+c+"<br>"
+#returnText += "</p>"
+#returnFile = open("./output.txt", "w")
+#returnFile.write(returnText)
+#returnFile.close()
+          
 
 # ======= Correct check ==========
 
@@ -118,6 +93,18 @@ print("Correct Guesses Total:")
 print(correctGuessHam+correctGuessSpam)
 print("Correct %:")
 print(correctPercentage)
+
+
+returnText = "<h2>"
+returnText += "Correct Guesses Total: "+ str(correctGuessHam+correctGuessSpam) + "<br>"
+returnText += "Correct Percentage: " + str(correctPercentage)+ "<br>""<br>"
+returnText += "</h2><p>Detailed List: <FileName> - <Guessed Class><br>"
+for path, c in guessDictionary.items():
+    returnText += path[26:]+" - "+c+"<br>"
+returnText += "</p>"
+returnFile = open("./output.txt", "w")
+returnFile.write(returnText)
+returnFile.close()
 
     
 
