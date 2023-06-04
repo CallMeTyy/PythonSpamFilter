@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser(description='Naive Bayes Email Classifier Train
 parser.add_argument('--folder', type=str, help='Input Folder', required=True)
 parser.add_argument('--c', type=int, help='The Amount of Classes', default=2, required=False)
 parser.add_argument('--v', type=int, help='Words in vocabulary', default=200, required=False)
+parser.add_argument('--cs', type=int, help='All class names in csv', default="", required=False)
+parser.add_argument('--rs', type=int, help='All class regex in csv', default="", required=False)
 
 args = parser.parse_args()
 
@@ -29,12 +31,19 @@ else:
 files = glob.glob(args.folder + "/**/*.txt", recursive=True)
 
 # Create the classes with an input name and a regular expression
-for i in range(args.c):
-    print("Enter Class Name")
-    className = input()
-    print("Enter regex for search name")
-    classRegex = input()
-    classlist.append(EvaluationClass(className, classRegex))
+if args.cs and args.rs:
+    clist = args.cs.split(',')
+    rlist = args.cs.split(',')
+    for i in range(args.c):
+        if clist[i] and rlist[i]:
+            classlist.append(EvaluationClass(clist[i], rlist[i]))
+else:
+    for i in range(args.c):
+        print("Enter Class Name")
+        className = input()
+        print("Enter regex for search name")
+        classRegex = input()
+        classlist.append(EvaluationClass(className, classRegex))
 
 
 # Loop over all the documents and add the words to the dictionaries using custom made cutils (important functions)
