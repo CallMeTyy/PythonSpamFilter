@@ -29,6 +29,8 @@ if (path.exists(args.folder)):
 else:
     sys.exit("Folder not found")
 files = glob.glob(args.folder + "/**/*.txt", recursive=True)
+if not files:
+    files = glob.glob(args.folder + "/*.txt", recursive=True)
 
 # Create the classes with an input name and a regular expression
 if args.cs and args.rs:
@@ -36,6 +38,7 @@ if args.cs and args.rs:
     rlist = args.cs.split(',')
     for i in range(args.c):
         if clist[i] and rlist[i]:
+            print(f"Found class {clist[i]}")
             classlist.append(EvaluationClass(clist[i], rlist[i]))
 else:
     for i in range(args.c):
