@@ -96,9 +96,9 @@ print(correctPercentage)
 
 
 returnText = "<h2>"
-returnText += "Correct Guesses Total: "+ str(correctGuessHam+correctGuessSpam) + "(only available with ham/spam)<br>"
-returnText += "Correct Percentage: " + str(correctPercentage)+ "(only available with ham/spam)<br><br><br>"
-returnText += "</h2><p>Detailed List: (fileName) - (Guessed Class)<br>"
+returnText += "Correct Guesses Total: "+ str(correctGuessHam+correctGuessSpam) + "<br>"
+returnText += "Correct Percentage: " + str(correctPercentage)+ "<br></h2><p>Correct percentage is currently only available for ham/spam classes</p><br><br>"
+returnText += "<p>Detailed List: (fileName) - (Guessed Class)<br>"
 for path, c in guessDictionary.items():
     returnText += path[26:]+" - "+c+"<br>"
 returnText += "</p>"
