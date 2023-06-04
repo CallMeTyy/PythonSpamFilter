@@ -57,7 +57,7 @@ returnText = "<p>"
 for path, c in guessDictionary.items():
     returnText += path+" - "+c+"<br>"
 returnText += "</p>"
-returnFile = open("./data/output.txt", "w")
+returnFile = open("./output.txt", "w")
 returnFile.write(returnText)
 returnFile.close()
 
