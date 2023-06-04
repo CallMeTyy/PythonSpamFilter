@@ -35,7 +35,7 @@ if not files:
 # Create the classes with an input name and a regular expression
 if args.cs and args.rs:
     clist = args.cs.split(',')
-    rlist = args.cs.split(',')
+    rlist = args.rs.split(',')
     for i in range(args.c):
         if clist[i] and rlist[i]:
             print(f"Found class {clist[i]}")
