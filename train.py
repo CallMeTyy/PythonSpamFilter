@@ -2,6 +2,7 @@ import argparse
 from os import path
 import glob
 import sys
+import time
 from lib.pythonClassEvaluator import EvaluationClass, cutils
 
 # Argument Parser > Allows for command input
@@ -13,9 +14,11 @@ parser.add_argument('--c', type=int, help='The Amount of Classes', default=2, re
 parser.add_argument('--v', type=int, help='Words in vocabulary', default=200, required=False)
 parser.add_argument('--cs', type=str, help='All class names in csv', default="", required=False)
 parser.add_argument('--rs', type=str, help='All class regex in csv', default="", required=False)
+parser.add_argument('--debug', type=bool, help='Turn to True to print probabilities', default=False, required=False)
 
 args = parser.parse_args()
 
+debug = args.debug
 
 # Global Variables
 classlist = [] # All the different classes with the class name as key and the regex to find each class as value
@@ -48,6 +51,7 @@ else:
         classRegex = input()
         classlist.append(EvaluationClass(className, classRegex))
 
+startTime = time.perf_counter()
 
 # Loop over all the documents and add the words to the dictionaries using custom made cutils (important functions)
 for ec in classlist:
@@ -83,19 +87,24 @@ sortedList = sorted(chiList.items(), key=lambda item: item[1])
 wordCountWithHighChi = 0
 #min(args.v, len(sortedList))
 # Go over all the highest X2 words and calculate their probabilities
+#chisquaretxt = open("./chisquare.data", "w")
 for index in range(max(0,len(sortedList)-args.v), len(sortedList)):
     if (index >= 0):
         wordCountWithHighChi+=1
         word = sortedList[index][0]
+        #chisquaretxt.write(f"{word} : {chiList[word]}\n")
         for ec in classlist:
             if word in ec.wordDict:
                 probability = (EvaluationClass.getOccuranceForWord(ec, word)+1) / (EvaluationClass.GetDocumentCount(ec) + 2)
                 EvaluationClass.addProbability(ec, word, probability)
-                print(ec.name, word, probability) 
+                if debug:
+                    print(ec.name, word, probability)
+#chisquaretxt.close() 
+
 
 print("Amount of words in vocabulary", wordCountWithHighChi)
 cutils.encodeData(classlist)
-print("Done training model. Output path is ./evaluate/data.model")
+print(f"Done training model in {time.perf_counter()-startTime} seconds. Output path is ./data.model")
         
 
 

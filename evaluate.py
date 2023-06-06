@@ -2,6 +2,7 @@ import argparse
 import glob
 import re
 import math
+import time
 from lib.pythonClassEvaluator import cutils, EvaluationClass
 
 parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
@@ -9,13 +10,17 @@ parser = argparse.ArgumentParser(description='Naive Bayes Classifier')
 parser.add_argument('--folder', type=str, help='Test Folder', required=True)
 parser.add_argument('--checkpoint', type=str, help='The checkpoint to compare to (trained dataset)', required=True)
 parser.add_argument('--checkhamspam', type=bool, help='Whether to check for ham or spam and print performance (hardcoded check)', default=False,required=False)
+parser.add_argument('--debug', type=bool, help='Turn to True to print probabilities', default=False, required=False)
 
 args = parser.parse_args()
+
+debug = args.debug
 
 # Global Variables
 guessDictionary = {} # Stores a predicted class for a path to a file. 
 # ================
 
+startTime = time.perf_counter()
 
 # Retrieve all files and open the checkpoint file
 files = glob.glob(args.folder + "/**/*.txt", recursive=True)
@@ -40,13 +45,13 @@ for documentpath in files:
 
     # The highest chance has the largest likelyhood
     for probability in probabilities:
-        print(probability)
         if probability > highestChance:
             highestChance = probability
             className = classList[probabilities.index(probability)]
             predictedClass = EvaluationClass.getName(className)
 
-    print("Predicted Class for ",documentpath, predictedClass, highestChance)
+    if debug:
+        print("Predicted Class for ",documentpath, predictedClass, highestChance)
     guessDictionary[documentpath] = predictedClass
 
 
@@ -105,6 +110,8 @@ returnText += "</p>"
 returnFile = open("./output.txt", "w")
 returnFile.write(returnText)
 returnFile.close()
+
+print(f"Finished evaluation in {time.perf_counter()-startTime} seconds.")
 
     
 
