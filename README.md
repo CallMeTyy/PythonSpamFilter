@@ -33,6 +33,12 @@ Usage of the Evaluation script requires a model. Either first follow the Trainin
 
 To run an evaluation for example run: `python3 evaluate.py --folder ./evaluate --checkpoint ./data.model`
 
+### Usage - Regular Expressions
+
+When training the system, you will have to enter the regular expressions for the files you have as data. If you are training for ham-spam and are using the corpus (University assignment), you can use `^[0-9]' for ham and `^s` for spam. 
+
+These expressions are indicators for the program to recognize file names. If other file name structures are used, please create a suitable regular expression before usage. In general, the easiest way to recognize a filename is by using the starts with symbol `^`
+
 ### Extra Flags
 - For both scrips the argument `--debug True` can be added to generate more extensive print lines. This does decrease performance by a lot.
 - To speed up the input of training hidden flags `--cs` and `--rs` were added. Both must be used to bypass the custom input.
